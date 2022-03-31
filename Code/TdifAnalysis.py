@@ -1,6 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from NLPTermProject import Retrieval
+import Retrieval
 
 
 class TdifAnalysis(Retrieval.Retrieval):

@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 
-from NLPTermProject.Answers import Answer
+from Code.Answers import Answer
 
 
 def retrieve_answers(self, question, section='abstract', keyword=None, max_articles=1000, batch_size=4):

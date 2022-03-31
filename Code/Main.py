@@ -4,8 +4,8 @@ from sys import platform
 import pandas as pd
 import torch
 
-from NLPTermProject import ResearchAnalysis, SpeechToText
-from NLPTermProject.TdifAnalysis import TdifAnalysis
+import ResearchAnalysis, SpeechToText
+import TdifAnalysis
 
 if platform == "darwin":
     import ssl
@@ -20,8 +20,8 @@ class Main(object):
         self.tokenizer = torch.hub.load('huggingface/pytorch-transformers', 'tokenizer', 'bert-base-uncased')
         self.model = torch.hub.load('huggingface/pytorch-transformers', 'modelForQuestionAnswering', 'bert-base-uncased')
         self.retrievers = {
-            'abstract': TdifAnalysis(self.data[self.data.abstract.notna()].abstract),
-            'body_text': TdifAnalysis(self.data[self.data.body_text.notna()].body_text)
+            'abstract': TdifAnalysis.TdifAnalysis(self.data[self.data.abstract.notna()].abstract),
+            'body_text': TdifAnalysis.TdifAnalysis(self.data[self.data.body_text.notna()].body_text)
         }
         self.main_question_dict = dict()
         self.model.save_pretrained('Output')
