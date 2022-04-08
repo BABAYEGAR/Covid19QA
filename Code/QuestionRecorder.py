@@ -1,13 +1,15 @@
 from scipy.io.wavfile import write
 
-import sounddevice
+import sounddevice as sd
 
 
 def record_voice():
     fs = 44100
-    second = 60
-    record_voice = sounddevice.rec(int(second * fs), samplerate=fs, channels=2)
-    sounddevice.wait()
-    sounddevice.default.device = 'digital output'
-    write("Question/question.wav", fs, record_voice)
+    second = 10
+    sd.default.device = "MacBook Pro Microphone"
+    print("=========== Recorder Started (10 Seconds) ============")
+    recorded_voice = sd.rec(int(second * fs), samplerate=fs, channels=1)
+    sd.wait()
+    write("Question/question.wav", fs, recorded_voice)
+    print("=========== Recording Saved ============")
 

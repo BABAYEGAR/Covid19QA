@@ -5,20 +5,19 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 class Retrieval(abc.ABC):
-    """Base class for retrieval methods."""
     def __init__(self, docs, keys=None):
-        self._docs = docs.copy()
+        self.docs = docs.copy()
         if keys is not None:
-            self._docs.index = keys
+            self.docs.index = keys
         self.model = None
         self.vectorizer = None
 
-    def _top_documents(self, q_vec, top_n=10):
-        similarity = cosine_similarity(self.vectorizer, q_vec)
+    def top_n_documents(self, vector, top_count=10):
+        similarity = cosine_similarity(self.vectorizer, vector)
         rankings = np.argsort(np.squeeze(similarity))[::-1]
-        ranked_indices = self._docs.index[rankings]
-        return self._docs[ranked_indices][:top_n]
+        ranked_indices = self.docs.index[rankings]
+        return self.docs[ranked_indices][:top_count]
 
     @abc.abstractmethod
-    def retrieve(self, query, top_n=10):
+    def retrieve(self, query, top_count=10):
         pass
