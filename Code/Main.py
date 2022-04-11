@@ -5,7 +5,7 @@ from sys import platform
 import pandas as pd
 import torch
 
-import SpeechToText
+import GoogleTranslateWavToText
 import TdifAnalysis
 from Code import ResearchAnswers, QuestionRecorder
 
