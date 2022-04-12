@@ -1,5 +1,5 @@
 {
-  "_name_or_path": "/Users/babayegar/PycharmProjects/Covid19QAWeb/Covid19QAWebApp/Code/Output/",
+  "_name_or_path": "Output/",
   "architectures": [
     "BertForQuestionAnswering"
   ],

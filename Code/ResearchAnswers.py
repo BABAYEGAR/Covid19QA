@@ -4,6 +4,11 @@ import torch
 from Code.Answers import Answer
 
 
+def summarize_answer(self, text):
+    summarized_answer = self.summarizer(text, max_length=100, min_length=30, do_sample=False)[0]
+    return summarized_answer['summary_text']
+
+
 def find_answers(self, question, max_articles):
     batch_size = 64
     text_tokens = []
@@ -41,8 +46,11 @@ def find_answers(self, question, max_articles):
             append_row = [j.text, j.start_score, j.end_score, j.input_text]
             append_row.extend(row[columns].values)
             processed_answers.append(append_row)
-    return pd.DataFrame(processed_answers, columns=(['answer', 'start_score', 'end_score', 'context'] + columns))\
+    answers_data = pd.DataFrame(processed_answers,
+                                columns=(['answer', 'start_score', 'end_score', 'context'] + columns)) \
         .sort_values(['start_score', 'end_score'], ascending=False)
+    answers_data["summarized_answer"] = answers_data["answer"].apply(lambda x: summarize_answer(self, x))
+    return answers_data
 
 
 def get_answers_from_transformer(self, question, text_list):
@@ -58,7 +66,7 @@ def get_answers_from_transformer(self, question, text_list):
     answer_end = (torch.argmax(output.end_logits, dim=1) + 1).detach().numpy()
     answers = []
     for i, text in enumerate(text_list):
-        input_text = tokenizer.decode(input_ids[i, :], clean_up_tokenization_spaces=True).split('[SEP] ', 2)[1]
+        input_text = tokenizer.decode(input_ids[i, :], clean_up_tokenization_spaces=True).split(' ', 2)[1]
         answer = tokenizer.decode(input_ids[i, answer_start[i]:answer_end[i]], clean_up_tokenization_spaces=True)
         score_start = output.start_logits.detach().numpy()[i][answer_start[i]]
         score_end = output.end_logits.detach().numpy()[i][answer_end[i] - 1]

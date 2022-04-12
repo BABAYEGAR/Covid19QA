@@ -4,6 +4,7 @@ from sys import platform
 
 import pandas as pd
 import torch
+from transformers import pipeline
 
 import GoogleTranslateWavToText
 import TdifAnalysis
@@ -20,6 +21,7 @@ class Main(object):
     def __init__(self, data_path):
         self.data = pd.read_csv(data_path)
         self.tokenizer = torch.hub.load('huggingface/pytorch-transformers', 'tokenizer', 'bert-base-cased')
+        self.summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
         if not os.path.exists("Output/config.json") or not os.path.exists("Output/pytorch_model.bin"):
             self.model = torch.hub.load('huggingface/pytorch-transformers', 'modelForQuestionAnswering',
                                         'bert-base-cased')
@@ -30,7 +32,6 @@ class Main(object):
             'abstract': TdifAnalysis.TdifAnalysis(self.data[self.data.abstract.notna()].abstract),
             'body_text': TdifAnalysis.TdifAnalysis(self.data[self.data.body_text.notna()].body_text)
         }
-        self.question_dict = dict()
 
     def run(self, asked_question, answers_article_length):
         answers = ResearchAnswers.find_answers(self, asked_question, max_articles=answers_article_length)
@@ -52,7 +53,7 @@ if __name__ == '__main__':
         user_input = str(input("Enter Input Option:"))
     if user_input == "1":
         QuestionRecorder.record_voice()
-        question = SpeechToText.get_audio_transcription("Question/question.wav")
+        question = GoogleTranslateWavToText.get_audio_transcription("Question/question.wav")
     else:
         question = str(input("Enter Question Text:"))
     article_length = 5
