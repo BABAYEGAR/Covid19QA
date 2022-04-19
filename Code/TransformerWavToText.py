@@ -22,7 +22,8 @@ def get_audio_transcription(path):
     prediction = torch.argmax(logits, dim=-1)
     # Passing the prediction to the tokenizer decode to get the transcription
     transcription = tokenizer.batch_decode(prediction)[0]
+    print(transcription)
     return transcription
 
 
-print(get_audio_transcription("Question/question.wav"))
+

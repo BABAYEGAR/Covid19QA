@@ -2,6 +2,7 @@ import abc
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 class Retrieval(abc.ABC):
@@ -21,3 +22,13 @@ class Retrieval(abc.ABC):
     @abc.abstractmethod
     def retrieve(self, query, top_count=10):
         pass
+
+
+class TdifAnalysis(Retrieval):
+    def __init__(self, docs, keys=None):
+        super(TdifAnalysis, self).__init__(docs, keys)
+        self.model = TfidfVectorizer()
+        self.vectorizer = self.model.fit_transform(docs)
+
+    def retrieve(self, query, top_count=10):
+        return self.top_n_documents(self.model.transform([query]), top_count)

@@ -9,55 +9,44 @@ def summarize_answer(self, text):
     return summarized_answer['summary_text']
 
 
-def find_answers(self, question, max_articles):
+def search_answers_in_articles(self, question, max_articles):
     batch_size = 64
-    text_tokens = []
+    body_text_listing = []
     indices = []
-    section = 'abstract'
-    section_path = section.split('/')
     # get top N candidate articles based on similarity score
-    candidates = self.data.loc[self.retrievers[section_path[0]].retrieve(question, max_articles).index]
-    candidates = candidates.head(max_articles)
-    for index, row in candidates.iterrows():
-        if section_path[0] == 'body_text':
-            text = row.body_text
-        else:
-            text = row[section]
-        if text and isinstance(text, str):
-            text_tokens.append(text)
+    top_candidates = self.data.loc[self.retrievers["abstract"].retrieve(question, max_articles).index].head(max_articles)
+    for index, row in top_candidates.iterrows():
+        if row.body_text and isinstance(row.body_text, str):
+            body_text_listing.append(row.body_text)
             indices.append(index)
-
-    batch_num = len(text_tokens) // batch_size
-    all_answers = []
+    batch_num = len(body_text_listing) // batch_size
+    retrieved_answers = []
     for i in range(batch_num):
-        batch = text_tokens[i * batch_size:(i + 1) * batch_size]
+        batch = body_text_listing[i * batch_size:(i + 1) * batch_size]
         answers = get_answers_from_transformer(self, question, batch)
-        all_answers.extend(answers)
-
-    last_batch = text_tokens[batch_size * batch_num:]
+        retrieved_answers.extend(answers)
+    last_batch = body_text_listing[batch_size * batch_num:]
     if last_batch:
-        all_answers.extend(get_answers_from_transformer(self, question, last_batch))
-
+        retrieved_answers.extend(get_answers_from_transformer(self, question, last_batch))
     columns = ['doi', 'authors', 'journal', 'publish_time', 'title']
     processed_answers = []
-    for i, j in enumerate(all_answers):
+    for i, j in enumerate(retrieved_answers):
         if j:
-            row = candidates.loc[indices[i]]
+            row = top_candidates.loc[indices[i]]
             append_row = [j.text, j.start_score, j.end_score, j.input_text]
             append_row.extend(row[columns].values)
             processed_answers.append(append_row)
-    answers_data = pd.DataFrame(processed_answers,
-                                columns=(['answer', 'start_score', 'end_score', 'context'] + columns)) \
-        .sort_values(['start_score', 'end_score'], ascending=False)
-    answers_data["summarized_answer"] = answers_data["answer"].apply(lambda x: summarize_answer(self, x))
-    return answers_data
+    answers_datatable = pd.DataFrame(processed_answers,
+                                     columns=(['answer', 'start_score', 'end_score', 'context'] + columns)).sort_values(
+        ['start_score', 'end_score'], ascending=False)
+    answers_datatable["summarized_answer"] = answers_datatable["answer"].apply(lambda x: summarize_answer(self, x))
+    return answers_datatable
 
 
 def get_answers_from_transformer(self, question, text_list):
     tokenizer = self.tokenizer
-    inputs = tokenizer.batch_encode_plus(
-        [(question, text) for text in text_list], add_special_tokens=True, return_tensors='pt'
-        , truncation_strategy='only_second', pad_to_max_length=True)
+    inputs = tokenizer.batch_encode_plus([(question, text) for text in text_list], add_special_tokens=True,
+                                         return_tensors='pt', truncation_strategy='only_second', pad_to_max_length=True)
     input_ids = inputs['input_ids']
     output = self.model(input_ids)
     # Get the most likely beginning of each answer with the argmax of the score
