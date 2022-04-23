@@ -6,7 +6,7 @@ import sounddevice as sd
 def record_voice():
     fs = 44100
     second = 10
-    sd.default.device = "MacBook Pro Microphone"
+    sd.default.device = 'digital output'
     print("=========== Recorder Started (10 Seconds) ============")
     recorded_voice = sd.rec(int(second * fs), samplerate=fs, channels=1)
     sd.wait()
