@@ -87,4 +87,3 @@ def get_answers_from_transformer(self, question, text_list):
         else:
             answers.append(None)
     return answers
-

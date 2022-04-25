@@ -28,9 +28,10 @@ class Main(object):
         if not os.path.exists("Output/config.json") or not os.path.exists("Output/pytorch_model.bin"):
             self.model = torch.hub.load('huggingface/pytorch-transformers', 'modelForQuestionAnswering',
                                         'bert-base-cased')
+            self.model.save_pretrained('Output')
         else:
             self.model = torch.hub.load('huggingface/pytorch-transformers', 'modelForQuestionAnswering', 'Output/')
-            self.model.save_pretrained('Output')
+
         if device != "cpu":
             self.model = self.model.to(device)
 
