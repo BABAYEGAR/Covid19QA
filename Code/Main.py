@@ -6,8 +6,8 @@ import pandas as pd
 import torch
 from torch import cuda
 from transformers import pipeline
-
-from Code import ResearchAnswers, Retrieval, QuestionRecorder, GoogleTranslateWavToText
+from Code.RetrieveAnswers import TFIDF
+from Code import ResearchAnswers, QuestionRecorder, GoogleTranslateWavToText
 
 if platform == "darwin":
     import ssl
@@ -22,9 +22,8 @@ class Main(object):
     def __init__(self, data_path):
         self.data = pd.read_csv(data_path)
         self.tokenizer = torch.hub.load('huggingface/pytorch-transformers', 'tokenizer', 'bert-base-cased')
-        self.summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-        self.retrievers = {'abstract': Retrieval.TdifAnalysis(self.data[self.data.abstract.notna()].abstract),
-                           'body_text': Retrieval.TdifAnalysis(self.data[self.data.body_text.notna()].body_text)}
+        self.summarizer = pipeline("summarization")
+        self.articles = TFIDF(self.data[self.data.abstract.notna()].abstract)
         if not os.path.exists("Output/config.json") or not os.path.exists("Output/pytorch_model.bin"):
             self.model = torch.hub.load('huggingface/pytorch-transformers', 'modelForQuestionAnswering',
                                         'bert-base-cased')
@@ -56,5 +55,5 @@ if __name__ == '__main__':
         question = GoogleTranslateWavToText.get_audio_transcription("Question/question.wav")
     else:
         question = str(input("Enter Question Text:"))
-    article_length = 5
+    article_length = 10
     print(main.run(question, article_length))
