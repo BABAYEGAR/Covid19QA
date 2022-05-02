@@ -28,7 +28,7 @@ My project objective was to apply transformers question answering and summarizer
 * attr
 
 
-2. To generate the dataset, execute the DataGenerator.py file. 
+2. To generate a new dataset, execute the DataGenerator.py file. 
 
 3. To start the application, run the main.py file. You can select either speech or text as user input by entering 1 or 2. if you select speech, the program will prompt when the recorder starts and the timeout is 10s. If you select text option then you simply type your question.
 
