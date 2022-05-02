@@ -28,9 +28,9 @@ My project objective was to apply transformers question answering and summarizer
 * attr
 
 
-2. To generate a new dataset, execute the DataGenerator.py file. 
+2. To generate a new dataset, execute the DataGenerator.py file in the Code directory. 
 
-3. To start the application, run the main.py file. You can select either speech or text as user input by entering 1 or 2. if you select speech, the program will prompt when the recorder starts and the timeout is 10s. If you select text option then you simply type your question.
+3. To start the application, run the main.py file in the Code directory. You can select either speech or text as user input by entering 1 or 2. if you select speech, the program will prompt when the recorder starts and the timeout is 10s. If you select text option then you simply type your question.
 
 4. The program will check the Output folder and if the there is no saved transformer model, the program will train and write the model to file
 
