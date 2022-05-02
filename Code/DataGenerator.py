@@ -10,7 +10,8 @@ if platform == "darwin":
     ssl._create_default_https_context = ssl._create_unverified_context
 
 meta_data = pd.read_csv("Data/metadata.csv",
-                        usecols=["title", "doi", "pmcid", "abstract", "publish_time", "authors", "journal", "license",
+                        usecols=["title", "doi", "pmcid", "abstract", "source_x", "publish_time", "authors", "journal",
+                                 "license",
                                  "url"],
                         low_memory=False, encoding="utf8")
 
@@ -34,7 +35,7 @@ def scrape_body_text(number_of_articles):
                 meta_data.drop(axis=0, index=index)
         else:
             break
-    meta_data.to_csv("Data/data.csv")
+    meta_data.to_csv("Data/covid19.csv")
 
 
-scrape_body_text(1000)
+scrape_body_text(10000)

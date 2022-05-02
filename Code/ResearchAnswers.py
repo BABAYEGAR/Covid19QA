@@ -81,8 +81,8 @@ def search_answers_in_articles(self, question, max_articles):
                 score_count += 1
                 output = self.model(**chunk)
                 if device == "cpu":
-                    answer_start = torch.argmax(output.start_logits, dim=1).detach().numpy()
-                    answer_end = (torch.argmax(output.end_logits, dim=1) + 1).detach().numpy()
+                    answer_start = np.argmax(output.start_logits.cpu().detach().numpy(), axis=1)[0]
+                    answer_end = np.argmax(output.end_logits.cpu().detach().numpy(), axis=1)[0] + 1
                 else:
                     answer_start = torch.argmax(output.start_logits, dim=1)
                     answer_end = (torch.argmax(output.end_logits, dim=1) + 1)
@@ -100,11 +100,11 @@ def search_answers_in_articles(self, question, max_articles):
             output = self.model(input_ids)
             # Get the most likely beginning of each answer with the argmax of the score
             if device == "cpu":
-                answer_start = torch.argmax(output.start_logits, dim=1).detach().numpy()
-                answer_end = (torch.argmax(output.end_logits, dim=1) + 1).detach().numpy()
+                answer_start = np.argmax(output.start_logits.cpu().detach().numpy(), axis=1)[0]
+                answer_end = np.argmax(output.end_logits.cpu().detach().numpy(), axis=1)[0]
             else:
                 answer_start = torch.argmax(output.start_logits, dim=1)
-                answer_end = (torch.argmax(output.end_logits, dim=1) + 1)
+                answer_end = torch.argmax(output.end_logits, dim=1) + 1
             start_score = np.argmax(output.start_logits.cpu().detach().numpy(), axis=1)[0]
             end_score = np.argmax(output.end_logits.cpu().detach().numpy(), axis=1)[0]
             # Get the most likely end of each answer with the argmax of the score

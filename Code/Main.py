@@ -23,7 +23,7 @@ class Main(object):
         self.data = pd.read_csv(data_path)
         self.tokenizer = torch.hub.load('huggingface/pytorch-transformers', 'tokenizer', 'bert-base-cased')
         self.summarizer = pipeline("summarization")
-        self.articles = TFIDF(self.data[self.data.abstract.notna()].abstract)
+        self.articles = TFIDF(self.data[self.data.body_text.notna()].body_text)
         if not os.path.exists("Output/config.json") or not os.path.exists("Output/pytorch_model.bin"):
             self.model = torch.hub.load('huggingface/pytorch-transformers', 'modelForQuestionAnswering',
                                         'bert-base-cased')
