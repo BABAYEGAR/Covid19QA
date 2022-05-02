@@ -34,4 +34,4 @@ My project objective was to apply transformers question answering and summarizer
 
 4. The program will check the Output folder and if the there is no saved transformer model, the program will train and write the model to file
 
-5. The program will return a dataframe with answers ranked by the start score.
+5. The program will return a dataframe with answers sorted in descending order by the start and end score.
